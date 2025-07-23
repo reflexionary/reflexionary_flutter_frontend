@@ -145,7 +145,8 @@ class _MainPageState extends State<MainPage> {
                   // buttons for the three Gurus
                   Container(
                     decoration: BoxDecoration(
-                      color: ThemeData().primaryColor.withOpacity(0.5),
+                      color: ThemeData().primaryColor.withOpacity(0.3),
+                      border: Border.all(color: ThemeData().primaryColor, width: 1.5),
                       borderRadius: BorderRadius.circular(20),
                       
                     ),

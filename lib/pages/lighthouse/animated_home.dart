@@ -54,7 +54,7 @@ class _AnimatedHomeState extends State<AnimatedHome> {
     );
   }
 
-  Widget _buildFloatingButton(int index, Color color) {
+  Widget _buildFloatingButton(int index, Color color, String label) {
     return AnimatedPositioned(
       duration: const Duration(seconds: 4),
       curve: Curves.easeInOut,
@@ -77,7 +77,7 @@ class _AnimatedHomeState extends State<AnimatedHome> {
             ],
           ),
           child: Center(
-            child: Icon(Icons.explore, color: Colors.white),
+            child: Text(label),
           ),
         ),
       ),
@@ -88,17 +88,22 @@ class _AnimatedHomeState extends State<AnimatedHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFEEF2F7),
+      appBar: AppBar(
+        title: const Text('LightHouse'),
+      ),
       body: Stack(
         children: [
           const Center(
             child: Text(
-              "Reflexionary Buttons 🧠✨",
+              "LightHouse",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
-          _buildFloatingButton(0, Colors.teal),
-          _buildFloatingButton(1, Colors.amber),
-          _buildFloatingButton(2, Colors.deepPurple),
+
+          // Change the colors to match the page theme
+          _buildFloatingButton(0, Colors.teal, 'Journals'),
+          _buildFloatingButton(1, Colors.amber, 'Insights'),
+          _buildFloatingButton(2, Colors.deepPurple, 'Patterns'),
         ],
       ),
     );
