@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:reflexionary_frontend/pages/appTheme/theme_provider.dart';
 
 class MoodChip extends StatelessWidget {
   final String label;
@@ -18,6 +20,9 @@ class MoodChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+    final textColor = isDark ? (selected ? Colors.white : Colors.white70) : (selected ? Colors.black : Colors.black87);
+
     return ChoiceChip(
       avatar: Text(emoji),
       label: Text(label),
@@ -29,7 +34,7 @@ class MoodChip extends StatelessWidget {
         side: BorderSide(color: color),
       ),
       labelStyle: TextStyle(
-        color: selected ? Colors.black : Colors.black87,
+        color: textColor,
         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
       ),
     );

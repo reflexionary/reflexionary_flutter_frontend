@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:reflexionary_frontend/components/animated_gradient_box.dart';
 import 'package:reflexionary_frontend/components/glass_morphic_box.dart';
+import 'package:reflexionary_frontend/components/typewriter_question_banner.dart';
 import 'appTheme/theme_provider.dart';
 import 'package:provider/provider.dart';
 
@@ -108,6 +109,9 @@ Widget pageButton(VoidCallback onTap, String pageID) {
     return Scaffold(
       body: Stack(
         children: [
+          // glowing slanted questions in the background
+          const TypewriterQuestionBanner(),
+
           // App bar
           Positioned(
             top: 10.0,

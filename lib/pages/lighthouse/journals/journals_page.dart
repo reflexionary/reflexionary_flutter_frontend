@@ -32,7 +32,6 @@ class JournalsPageState extends State<JournalsPage> {
     
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F7FA),
       body: SafeArea(
         child: LayoutBuilder(builder: (context, constraints){
           final isWide = constraints.maxWidth > 900;
@@ -131,8 +130,10 @@ class JournalsPageState extends State<JournalsPage> {
                           const SizedBox(width: 8),
                           ElevatedButton.icon(
                             onPressed: () {},
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: ThemeData().primaryColor),
                             icon: const Icon(Icons.add),
-                            label: const Text("Add Tag"),
+                            label: const Text("Add Tag", style: TextStyle(color: Colors.black),),
                           ),
                         ],
                       ),

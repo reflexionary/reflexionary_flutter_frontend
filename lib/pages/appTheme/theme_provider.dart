@@ -14,7 +14,7 @@ class ThemeProvider with ChangeNotifier {
 
   ThemeData get lightTheme => ThemeData(
         brightness: Brightness.light,
-        scaffoldBackgroundColor: Colors.white,
+        scaffoldBackgroundColor: const Color(0xFFFAF9F6),
         fontFamily: 'Casanova',
         textTheme: const TextTheme(
           headlineLarge: TextStyle(fontFamily: 'Runalto', fontSize: 40),
