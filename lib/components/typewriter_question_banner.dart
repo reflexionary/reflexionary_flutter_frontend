@@ -10,11 +10,12 @@ class TypewriterQuestionBanner extends StatefulWidget {
 
 class _TypewriterQuestionBannerState extends State<TypewriterQuestionBanner> {
   final List<String> questions = [
-    "What did you learn today?",
+    "How often did you check the charts — and why?",
     "How did you feel while trading?",
-    "What would you do differently next time?",
+    "What pattern did you repeat — knowingly or unknowingly?",
     "Did you follow your trading plan?",
-    "What insight surprised you most?"
+    "What insight surprised you most?",
+    "If today’s trades were reviewed by your future self, what would they critique?"
   ];
 
   int currentQuestionIndex = 0;
