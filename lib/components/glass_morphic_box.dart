@@ -25,10 +25,10 @@ class GlassMorphicBox extends StatelessWidget {
         filter: ImageFilter.blur(sigmaX: blur, sigmaY: blur),
         child: Container(
           decoration: BoxDecoration(
-            color: Colors.white.withOpacity(opacity), // Semi-glass white
+            color: Colors.white.withAlpha((opacity * 255).round()), // Semi-glass white
             borderRadius: BorderRadius.circular(borderRadius),
             border: Border.all(
-              color: borderColor.withOpacity(0.4),
+              color: borderColor.withAlpha(102),
               width: 1.5,
             ),
           ),

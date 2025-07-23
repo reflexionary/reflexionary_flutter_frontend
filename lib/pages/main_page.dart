@@ -20,7 +20,6 @@ class MainPage extends StatefulWidget {
 }
 
 class _MainPageState extends State<MainPage> {
-  bool _isDarkMode = false;
 
   void _changeTheme() {
   final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
@@ -62,7 +61,7 @@ Widget pageButton(VoidCallback onTap, String pageID) {
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: colorScheme.primary, width: 1.5),
-        backgroundColor: colorScheme.primary.withOpacity(0.1),
+        backgroundColor: colorScheme.primary.withAlpha(25),
         foregroundColor: isDark ? Colors.white : Colors.black,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
@@ -148,7 +147,20 @@ Widget pageButton(VoidCallback onTap, String pageID) {
                   // Image(asset_id),
 
                   // reflexionary label
-                  Text('Reflexionary', style: TextStyle(fontFamily: 'Runalto', fontSize: 40),),
+                  Text(
+                    'Reflexionary', 
+                    style: TextStyle(
+                      fontFamily: 'Runalto', 
+                      fontSize: 60,
+                      shadows: [
+                        Shadow(
+                          color: isDark? Colors.white.withAlpha((0.5 * 255).round()) : Colors.black.withAlpha((0.5 * 255).round()),
+                          offset: const Offset(2, 2),
+                          blurRadius: 2,
+                        ),
+                      ],
+                      ),
+                    ),
 
                   // spacer for better visuals
                   SizedBox(height: 10,),

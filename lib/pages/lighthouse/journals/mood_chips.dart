@@ -23,8 +23,8 @@ class MoodChip extends StatelessWidget {
       label: Text(label),
       selected: selected,
       onSelected: (_) => onTap(),
-      selectedColor: color.withOpacity(0.3),
-      backgroundColor: color.withOpacity(0.15),
+      selectedColor: color.withAlpha((0.3 * 255).round()),
+      backgroundColor: color.withAlpha((0.15 * 255).round()),
       shape: StadiumBorder(
         side: BorderSide(color: color),
       ),

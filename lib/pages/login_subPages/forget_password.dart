@@ -1,149 +1,153 @@
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:reflexionary_frontend/components/custom_button.dart';
+import 'package:reflexionary_frontend/components/my_textfield.dart';
+import 'package:reflexionary_frontend/pages/appTheme/theme_provider.dart';
 import 'package:reflexionary_frontend/pages/login_page.dart';
 import 'package:reflexionary_frontend/pages/login_subPages/verify_password.dart';
-import 'package:flutter/material.dart';
-import 'package:reflexionary_frontend/components/my_textfield.dart';
 
-// ignore: camel_case_types
 class forget_password extends StatelessWidget {
   forget_password({super.key});
 
-  // text editing controllers
   final emailController = TextEditingController();
-  // ignore: non_constant_identifier_names
   final OTPController = TextEditingController();
 
-  // sign user in method
   void verifyOTP() {}
 
   @override
   Widget build(BuildContext context) {
+    final maxWidth = 600.0;
+    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+    final boxColor = isDark ? Colors.white : Colors.black;
+
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: Center(
-        child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black),
-            borderRadius: BorderRadius.circular(12),
-          
-            ),
-            padding: EdgeInsets.all(15),
-          width: MediaQuery.sizeOf(context).width * 0.4,
-          child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 80),
+      body: LayoutBuilder(
+        builder: (context, constraints) {
+          double availableWidth = constraints.maxWidth;
+          double containerWidth = availableWidth > maxWidth
+              ? maxWidth
+              : availableWidth * 0.9;
 
-            // Reset password
-            const Center(
-              child: Text(
-                'Reset Password',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 38,
-                    fontWeight: FontWeight.bold),
+          return Center(
+            child: Container(
+              width: containerWidth,
+              padding: const EdgeInsets.all(24),
+              decoration: BoxDecoration(
+                border: Border.all(color: boxColor),
+                borderRadius: BorderRadius.circular(16),
               ),
-            ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const SizedBox(height: 80),
 
-            const SizedBox(height: 40),
-
-            // LOGIN
-            const Center(
-              child: Text(
-                'Please enter your email address',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            const SizedBox(height: 25),
-
-            // emailID textfield
-            MyTextField(
-              controller: emailController,
-              hintText: 'Email',
-              obscureText: false,
-            ),
-
-            const SizedBox(
-              height: 10,
-            ),
-
-            // send OTP button
-            CustomButton(
-                buttonData: "Send OTP",
-                onTap: () {
-                  // Handle the sending OTP here
-                }),
-
-            const SizedBox(height: 60),
-
-            // enter OTP
-            const Center(
-              child: Text(
-                'Please enter the OTP',
-                style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold),
-              ),
-            ),
-
-            const SizedBox(height: 10),
-
-            // enter OTP textfield
-            MyTextField(
-              controller: OTPController,
-              hintText: 'enter OTP',
-              obscureText: false,
-            ),
-
-            const SizedBox(height: 10),
-
-            // verify OTP
-            CustomButton(
-                buttonData: "Verify OTP",
-                onTap: () {
-                  // Handle the OTP verification here
-
-                  // Then navigate the user to enter new password page
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (BuildContext context) => verifyPassword()));
-                }),
-
-            const SizedBox(height: 35),
-
-            // Sign in
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Go to login?',
-                  style: TextStyle(color: Colors.grey[700]),
-                ),
-                const SizedBox(width: 4),
-                GestureDetector(
-                  onTap: () {
-                    // Take the user back to login page
-                    Navigator.of(context).push(MaterialPageRoute(
-                        builder: (BuildContext context) => LoginPage()));
-                  },
-                  child: const Text(
-                    'Sign in',
-                    style: TextStyle(
-                      color: Colors.blue,
-                      fontWeight: FontWeight.bold,
+                  const Center(
+                    child: Text(
+                      'Reset Password',
+                      style: TextStyle(
+                        fontSize: 38,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
-        ),
+
+                  const SizedBox(height: 40),
+
+                  const Center(
+                    child: Text(
+                      'Please enter your email address',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 25),
+
+                  // Email
+                  MyTextField(
+                    controller: emailController,
+                    hintText: 'Email',
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  CustomButton(
+                    buttonData: "Send OTP",
+                    onTap: () {
+                      // Handle OTP sending here
+                    },
+                  ),
+
+                  const SizedBox(height: 60),
+
+                  const Center(
+                    child: Text(
+                      'Please enter the OTP',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  MyTextField(
+                    controller: OTPController,
+                    hintText: 'Enter OTP',
+                    obscureText: false,
+                  ),
+
+                  const SizedBox(height: 10),
+
+                  CustomButton(
+                    buttonData: "Verify OTP",
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => verifyPassword()),
+                      );
+                    },
+                  ),
+
+                  const SizedBox(height: 35),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Go to login?',
+                        style: TextStyle(color: Colors.grey[700]),
+                      ),
+                      const SizedBox(width: 4),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()),
+                          );
+                        },
+                        child: const Text(
+                          'Sign in',
+                          style: TextStyle(
+                            color: Colors.blue,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+            ),
+          );
+        },
       ),
-      )
     );
   }
 }

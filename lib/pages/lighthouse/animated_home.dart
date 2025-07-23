@@ -66,18 +66,25 @@ class _AnimatedHomeState extends State<AnimatedHome> {
           width: 70,
           height: 70,
           decoration: BoxDecoration(
-            color: color,
+            color: color.withAlpha(80),
+            border: Border.all(color: color, width: 2),
             shape: BoxShape.circle,
             boxShadow: [
               BoxShadow(
-                color: color.withOpacity(0.5),
+                color: color.withAlpha(122),
                 blurRadius: 12,
                 spreadRadius: 2,
               )
             ],
           ),
           child: Center(
-            child: Text(label),
+            child: Text(label, style: TextStyle(shadows: [
+              Shadow(
+                color: Colors.black.withAlpha(122),
+                offset: const Offset(1, 1),
+                blurRadius: 2)
+              ]),
+            ),
           ),
         ),
       ),
@@ -87,16 +94,16 @@ class _AnimatedHomeState extends State<AnimatedHome> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFEEF2F7),
+      // backgroundColor: const Color(0xFFEEF2F7),
       appBar: AppBar(
-        title: const Text('LightHouse'),
+        title: const Text('LightHouse', style: TextStyle(fontFamily: 'Runalto')),
       ),
       body: Stack(
         children: [
           const Center(
             child: Text(
               "LightHouse",
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+              style: TextStyle(fontFamily: 'Runalto', fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ),
 

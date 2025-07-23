@@ -23,7 +23,7 @@ class ThemeProvider with ChangeNotifier {
         colorScheme: const ColorScheme.light(
           primary: Color(0xFFAEC6CF), // primaryAccent
           secondary: Color(0xFFF7CAC9), // secondaryAccent
-          background: Color(0xFFFAF9F6), // background
+          surface: Color(0xFFFAF9F6), // background
         ),
       );
 
@@ -38,7 +38,7 @@ class ThemeProvider with ChangeNotifier {
         colorScheme: const ColorScheme.dark(
           primary: Color(0xFFAEC6CF), // primaryAccent
           secondary: Color(0xFFF7CAC9), // secondaryAccent
-          background: Color(0xFF121212),
+          surface: Color(0xFF121212),
         ),
       );
 }

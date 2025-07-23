@@ -67,7 +67,7 @@ class _AnimatedGradientBoxState extends State<AnimatedGradientBox>
               end: Alignment.bottomRight,
             ),
             border: Border.all(
-              color: colorScheme.onBackground.withOpacity(0.4),
+              color: colorScheme.onSurface.withAlpha(102),
               width: 1.5,
             ),
             borderRadius: BorderRadius.circular(widget.borderRadius),
