@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/journals/journals_page.dart';
 
 class JournalsScreen extends StatelessWidget{
   const JournalsScreen({super.key});
@@ -9,9 +10,7 @@ class JournalsScreen extends StatelessWidget{
       appBar: AppBar(
         title: const Text('Journals'),
       ),
-      body: const Center(
-        child: Text('Journals Screen'),
-      ),
+      body: JournalsPage(),
     );
   }
 }

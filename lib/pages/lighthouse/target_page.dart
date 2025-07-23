@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/insights/insights_screen.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/journals/journals_screen.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/patterns_screen.dart';
 
 class TargetPage extends StatelessWidget {
   final int index;
@@ -6,18 +9,11 @@ class TargetPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("Target Page ${index + 1}"),
-        backgroundColor: Colors.deepPurpleAccent,
-      ),
-      body: Center(
-        child: ElevatedButton.icon(
-          onPressed: () => Navigator.pop(context),
-          icon: const Icon(Icons.arrow_back),
-          label: const Text("Go Back"),
-        ),
-      ),
-    );
+    return switch(index) {
+      0 => const JournalsScreen(),
+      1 => const InsightsScreen(),
+      2 => const PatternsScreen(),
+      _ => throw Exception(),
+    };
   }
 }
