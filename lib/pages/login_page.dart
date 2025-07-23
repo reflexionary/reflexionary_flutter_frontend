@@ -1,4 +1,3 @@
-import 'package:reflexionary_frontend/components/hidden_drawer.dart';
 import 'package:reflexionary_frontend/models/shared_preferences/shared_preference_model.dart';
 import 'package:reflexionary_frontend/pages/login_subPages//forget_password.dart';
 
@@ -6,6 +5,7 @@ import 'package:reflexionary_frontend/pages/login_subPages//register.dart';
 import 'package:flutter/material.dart';
 import 'package:reflexionary_frontend/components/custom_button.dart';
 import 'package:reflexionary_frontend/components/my_textfield.dart';
+import 'package:reflexionary_frontend/pages/main_page.dart';
 
 class LoginPage extends StatelessWidget {
   LoginPage({super.key});
@@ -25,9 +25,17 @@ class LoginPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: ListView(
-          physics: const ClampingScrollPhysics(),
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            borderRadius: BorderRadius.circular(12),
+          
+            ),
+            padding: EdgeInsets.all(15),
+          width: MediaQuery.sizeOf(context).width * 0.4,
+          child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             const SizedBox(height: 110),
 
@@ -105,7 +113,7 @@ class LoginPage extends StatelessWidget {
                   (route) => route.isFirst,
                 );
                 Navigator.of(context).push(MaterialPageRoute(
-                    builder: (BuildContext context) => const HiddenDrawer()));
+                    builder: (BuildContext context) => const MainPage()));
               },
               buttonData: "Sign in",
             ),
@@ -139,6 +147,7 @@ class LoginPage extends StatelessWidget {
             )
           ],
         ),
+        )
       ),
     );
   }

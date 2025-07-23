@@ -21,10 +21,17 @@ class verifyPassword extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      body: SafeArea(
-        child: Center(
+      body: Center(
+        child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.black),
+            borderRadius: BorderRadius.circular(12),
+          
+            ),
+            padding: EdgeInsets.all(15),
+          width: MediaQuery.sizeOf(context).width * 0.4,
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
             children: [
               // Reset password
               const Text(
