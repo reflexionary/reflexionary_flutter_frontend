@@ -1,5 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:reflexionary_frontend/components/animated_gradient_box.dart';
+import 'package:reflexionary_frontend/components/glass_morphic_box.dart';
+import 'appTheme/theme_provider.dart';
+import 'package:provider/provider.dart';
 
 // importing pages
 import 'package:reflexionary_frontend/models/shared_preferences/shared_preference_model.dart';
@@ -19,11 +23,10 @@ class _MainPageState extends State<MainPage> {
   bool _isDarkMode = false;
 
   void _changeTheme() {
-    // Use setState to rebuild the widget and reflect the UI changes.
-    setState(() {
-      _isDarkMode = !_isDarkMode;
-    });
+  final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+  themeProvider.toggleTheme();
   }
+
 
   // ignore: non_constant_identifier_names
   void load_lighthouseScreen(){
@@ -50,26 +53,32 @@ class _MainPageState extends State<MainPage> {
     }
   }
 
-  Widget pageButton(VoidCallback onTap, String pageID) {
-    // Get the current theme from the context.
-    // This is better than ThemeData() as it respects the app's current theme.
-    final theme = Theme.of(context);
+Widget pageButton(VoidCallback onTap, String pageID) {
+  final colorScheme = Theme.of(context).colorScheme;
+  final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    return OutlinedButton(
+  return GlassMorphicBox(
+    child: OutlinedButton(
       onPressed: onTap,
       style: OutlinedButton.styleFrom(
-        // Use the primary color for the border.
-        side: BorderSide(color: theme.primaryColor, width: 1.5),
-        // Use a semi-transparent version of the primary color for the background.
-        backgroundColor: theme.primaryColor.withOpacity(0.1),
-        // Set the color for the text/icon when the button is enabled.
-        foregroundColor: theme.primaryColor,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        side: BorderSide(color: colorScheme.primary, width: 1.5),
+        backgroundColor: colorScheme.primary.withOpacity(0.1),
+        foregroundColor: isDark ? Colors.white : Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
       ),
-      child: Text(pageID, style: const TextStyle(fontWeight: FontWeight.bold)),
-    );
-  }
+      child: Text(
+        pageID,
+        style: const TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold),
+      ),
+    ),
+  );
+}
+
 
   Widget loginDetail(){
     return IconButton(
@@ -93,7 +102,9 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     // The icon can now change based on the current theme state.
-    final themeIcon = _isDarkMode ? Icons.dark_mode : Icons.light_mode;
+    final isDark = Provider.of<ThemeProvider>(context).isDarkMode;
+    final themeIcon = isDark ? Icons.dark_mode : Icons.light_mode;
+
 
     return Scaffold(
       body: Stack(
@@ -106,26 +117,26 @@ class _MainPageState extends State<MainPage> {
               children: <Widget>[
                 // Login button / account details
                 TextButton(onPressed: (){
-                                // Set userLogin sharedPref to false (user logged out)
-              SharedPreferenceModel().setUserLoginStatus(false);
+                  // Set userLogin sharedPref to false (user logged out)
+                  SharedPreferenceModel().setUserLoginStatus(false);
 
-              // Take user to login page
-              Navigator.of(context).popUntil((route) => route.isFirst);
-              Navigator.of(context).push(MaterialPageRoute(
-                  builder: (BuildContext context) => LoginPage()));
-                }, child: Text('Login')),
+                  // Take user to login page
+                  Navigator.of(context).popUntil((route) => route.isFirst);
+                  Navigator.of(context).push(MaterialPageRoute(
+                      builder: (BuildContext context) => LoginPage()));
+                    }, child: Text('Login')),
 
-                // spacer for better visuals
-                const SizedBox(width: 10.0),
+                    // spacer for better visuals
+                    const SizedBox(width: 10.0),
 
-                // light/dark mode button
-                IconButton(
-                  onPressed: _changeTheme,
-                  icon: Icon(themeIcon),
-                )
-              ],
-            ),
-          ),
+                    // light/dark mode button
+                    IconButton(
+                      onPressed: _changeTheme,
+                      icon: Icon(themeIcon),
+                    )
+                  ],
+                ),
+              ),
 
           // central content
           Positioned.fill(
@@ -137,34 +148,29 @@ class _MainPageState extends State<MainPage> {
                   // Image(asset_id),
 
                   // reflexionary label
-                  Text('Reflexionary'),
+                  Text('Reflexionary', style: TextStyle(fontFamily: 'Runalto', fontSize: 40),),
 
                   // spacer for better visuals
                   SizedBox(height: 10,),
 
                   // buttons for the three Gurus
-                  Container(
-                    decoration: BoxDecoration(
-                      color: ThemeData().primaryColor.withOpacity(0.3),
-                      border: Border.all(color: ThemeData().primaryColor, width: 1.5),
-                      borderRadius: BorderRadius.circular(20),
-                      
-                    ),
-                    padding: EdgeInsets.all(20),
-                    child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [ 
-                      pageButton(load_lighthouseScreen, 'Lighthouse'),
-                      
-                      SizedBox(width: 10,),
+                  AnimatedGradientBox(
+                    borderRadius: 24,
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          pageButton(load_lighthouseScreen, 'Lighthouse'),
+                          const SizedBox(width: 10),
+                          pageButton(load_tethysScreen, 'Tethys'),
+                          const SizedBox(width: 10),
+                          pageButton(load_kuberaScreen, 'Qubera'),
+                          ],
+                          ),
+                          ),
+                          )
 
-                      pageButton(load_tethysScreen, 'Tethys'),
-
-                      SizedBox(width: 10,),
-
-                      pageButton(load_kuberaScreen, 'Kubera'),
-                    ],
-                  ),)
                 ],
               ),
             )

@@ -1,21 +1,52 @@
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:reflexionary_frontend/pages/lighthouse/journals/journal_card_entry.dart';
 import 'package:reflexionary_frontend/pages/lighthouse/journals/mood_chips.dart';
 
-class JournalsPage extends StatelessWidget {
+class JournalsPage extends StatefulWidget {
   const JournalsPage({super.key});
+
+  @override
+  State<JournalsPage> createState() => JournalsPageState();
+}
+
+class JournalsPageState extends State<JournalsPage> {
+  String? selectedMood;
+
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final moods = [
+            {'label': 'Joyful', 'emoji': '😊', 'color': Colors.amber},
+            {'label': 'Calm', 'emoji': '😌', 'color': Colors.blueAccent},
+            {'label': 'Neutral', 'emoji': '😐', 'color': Colors.grey},
+            {'label': 'Anxious', 'emoji': '😰', 'color': Colors.orange},
+            {'label': 'Sad', 'emoji': '😢', 'color': Colors.indigo},
+            {'label': 'Angry', 'emoji': '😡', 'color': Colors.red},
+            {'label': 'Focused', 'emoji': '⚡', 'color': Colors.green},
+    ];
+    
+    
+
     return Scaffold(
       backgroundColor: const Color(0xFFF7F7FA),
       body: SafeArea(
-        child: SingleChildScrollView(
+        child: LayoutBuilder(builder: (context, constraints){
+          final isWide = constraints.maxWidth > 900;
+
+          return SingleChildScrollView(
           padding: const EdgeInsets.all(24),
-          child: Column(
+          child: Center(
+            child: ConstrainedBox(
+              constraints: BoxConstraints(
+              maxWidth: isWide ? constraints.maxWidth * 0.65 : double.infinity,
+            ),
+
+            // rest of the UI
+            child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Header
@@ -71,16 +102,21 @@ class JournalsPage extends StatelessWidget {
                       Wrap(
                         spacing: 10,
                         runSpacing: 10,
-                        children: const [
-                          MoodChip(label: "Joyful", emoji: "😊", color: Colors.amber),
-                          MoodChip(label: "Calm", emoji: "😌", color: Colors.blueAccent),
-                          MoodChip(label: "Neutral", emoji: "😐", color: Colors.grey),
-                          MoodChip(label: "Anxious", emoji: "😰", color: Colors.orange),
-                          MoodChip(label: "Sad", emoji: "😢", color: Colors.indigo),
-                          MoodChip(label: "Angry", emoji: "😡", color: Colors.red),
-                          MoodChip(label: "Focused", emoji: "⚡", color: Colors.green),
-                        ],
-                      ),
+                        children: moods.map((mood){
+                          return MoodChip(
+                            label: mood['label'] as String,
+                            emoji: mood['emoji'] as String,
+                            color: mood['color'] as Color,
+                            selected: selectedMood == mood['label'],
+                            onTap: () {
+                              setState(() {
+                                selectedMood = mood['label'] as String;
+                              });
+                            },
+                          );
+                        }).toList()),
+                        
+                      
                       const SizedBox(height: 20),
                       Row(
                         children: [
@@ -102,7 +138,9 @@ class JournalsPage extends StatelessWidget {
                       ),
                       const SizedBox(height: 20),
                       ElevatedButton.icon(
-                        onPressed: () {},
+                        onPressed: () {
+                          Fluttertoast.showToast(msg: "Entry saved!", toastLength: Toast.LENGTH_SHORT, gravity: ToastGravity.BOTTOM); // NOT WORKING ON WEB
+                        },
                         icon: const Icon(Icons.send),
                         label: const Text("Save Entry"),
                         style: ElevatedButton.styleFrom(
@@ -149,7 +187,10 @@ class JournalsPage extends StatelessWidget {
               ),
             ],
           ),
-        ),
+            ),
+          )
+        );
+        })
       ),
     );
   }
