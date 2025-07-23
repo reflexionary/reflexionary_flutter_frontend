@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/insights/insights_page.dart';
 
 class InsightsScreen extends StatelessWidget{
   const InsightsScreen({super.key});
@@ -9,9 +10,7 @@ class InsightsScreen extends StatelessWidget{
       appBar: AppBar(
         title: const Text('Insights'),
       ),
-      body: const Center(
-        child: Text('Insights Screen'),
-      ),
+      body: InsightsPage()
     );
   }
 

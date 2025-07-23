@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/patterns/patterns_page.dart';
 
 class PatternsScreen extends  StatelessWidget{
   const PatternsScreen({super.key});
@@ -9,9 +10,7 @@ class PatternsScreen extends  StatelessWidget{
       appBar: AppBar(
         title: const Text('Patterns'),
       ),
-      body: const Center(
-        child: Text('Patterns Screen'),
-      ),
+      body: PatternsPage()
     );
   }
 

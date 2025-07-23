@@ -72,8 +72,10 @@ Widget pageButton(VoidCallback onTap, String pageID) {
       child: Text(
         pageID,
         style: const TextStyle(
+          fontSize: 25,
           color: Colors.black,
-          fontWeight: FontWeight.bold),
+          fontWeight: FontWeight.bold
+          ),
       ),
     ),
   );
@@ -127,7 +129,13 @@ Widget pageButton(VoidCallback onTap, String pageID) {
                   Navigator.of(context).popUntil((route) => route.isFirst);
                   Navigator.of(context).push(MaterialPageRoute(
                       builder: (BuildContext context) => LoginPage()));
-                    }, child: Text('Login')),
+                    }, child: Text(
+                      'Login', 
+                      style: TextStyle(
+                        decoration: TextDecoration.underline,
+                        fontFamily: 'Casanova', 
+                        fontSize: 20,
+                        color: isDark? Colors.white : Colors.black),)),
 
                     // spacer for better visuals
                     const SizedBox(width: 10.0),

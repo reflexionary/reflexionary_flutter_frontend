@@ -131,7 +131,7 @@ class JournalsPageState extends State<JournalsPage> {
                           ElevatedButton.icon(
                             onPressed: () {},
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: ThemeData().primaryColor),
+                              backgroundColor: ThemeData().primaryColor.withAlpha((0.2 * 255).round())),
                             icon: const Icon(Icons.add),
                             label: const Text("Add Tag", style: TextStyle(color: Colors.black),),
                           ),
