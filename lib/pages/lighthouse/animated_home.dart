@@ -93,6 +93,25 @@ class _AnimatedHomeState extends State<AnimatedHome> {
 
   @override
   Widget build(BuildContext context) {
+    final ButtonStyle hoverUnderlineStyle = ButtonStyle(
+      overlayColor: MaterialStateProperty.all(Colors.transparent),
+      textStyle: MaterialStateProperty.resolveWith<TextStyle>(
+        (Set<MaterialState> states) {
+          const baseStyle = TextStyle(fontFamily: 'Runalto', fontSize: 20);
+          if (states.contains(MaterialState.hovered)) {
+            return baseStyle.copyWith(
+              decoration: TextDecoration.underline,
+            );
+          }
+          return baseStyle;
+        },
+      ),
+    );
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final String img = isDark? 'lib/assets/images/wallpaper_lighthouse_dark.jpg' : 'lib/assets/images/wallpaper_lighthouse.jpg';
+
     return Scaffold(
       // backgroundColor: const Color(0xFFEEF2F7),
       appBar: AppBar(
@@ -100,17 +119,45 @@ class _AnimatedHomeState extends State<AnimatedHome> {
       ),
       body: Stack(
         children: [
-          const Center(
-            child: Text(
-              "LightHouse",
-              style: TextStyle(fontFamily: 'Runalto', fontSize: 24, fontWeight: FontWeight.bold),
-            ),
+          // add image wallpaper for lighthouse
+          Image.asset(
+            img,
+            fit: BoxFit.cover,
+            height: double.infinity,
+            width: double.infinity,
+            alignment: Alignment.center,
+            opacity: const AlwaysStoppedAnimation(.50),
           ),
 
-          // Change the colors to match the page theme
-          _buildFloatingButton(0, Colors.teal, 'Journals'),
-          _buildFloatingButton(1, Colors.amber, 'Insights'),
-          _buildFloatingButton(2, Colors.deepPurple, 'Patterns'),
+          // Journals text button
+          Positioned(
+            top: 50,
+            left: 50,
+            child: TextButton(
+                onPressed: () {},
+                style: hoverUnderlineStyle,
+                child: const Text('Journals')),
+          ),
+
+          // Insights text button
+          Positioned(
+            top: 80,
+            left: 70,
+            child: TextButton(
+                onPressed: () {},
+                style: hoverUnderlineStyle,
+                child: const Text('Insights')),
+          ),
+
+          // Patterns text button
+          Positioned(
+            top: 110,
+            left: 90,
+            child: TextButton(
+                onPressed: () {},
+                style: hoverUnderlineStyle,
+                child: const Text('Patterns')),
+          ),
         ],
       ),
     );
