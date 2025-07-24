@@ -73,7 +73,6 @@ flutter:
     - lib/assets/images/wallpaper_lighthouse.jpg
     - lib/assets/images/wallpaper.jpeg
     - lib/assets/images/wallpaper_lighthouse_dark.jpg
-    - lib/assets/animations/Space_Purple.lottie
     - lib/assets/animations/anim.lottie
     - lib/assets/animations/space_purple.json
 
