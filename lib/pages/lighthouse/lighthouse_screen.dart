@@ -20,11 +20,11 @@ class _AnimatedHomeState extends State<AnimatedHome> {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle hoverUnderlineStyle = ButtonStyle(
-      overlayColor: MaterialStateProperty.all(Colors.transparent),
-      textStyle: MaterialStateProperty.resolveWith<TextStyle>(
-        (Set<MaterialState> states) {
+      overlayColor: WidgetStateProperty.all(Colors.transparent),
+      textStyle: WidgetStateProperty.resolveWith<TextStyle>(
+        (Set<WidgetState> states) {
           const baseStyle = TextStyle(fontFamily: 'Runalto', fontSize: 20);
-          if (states.contains(MaterialState.hovered)) {
+          if (states.contains(WidgetState.hovered)) {
             return baseStyle.copyWith(
               decoration: TextDecoration.underline,
             );
