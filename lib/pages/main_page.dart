@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 // importing pages
 import 'package:reflexionary_frontend/models/shared_preferences/shared_preference_model.dart';
-import 'package:reflexionary_frontend/pages/lighthouse/animated_home.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/lighthouse_screen.dart';
 import 'package:reflexionary_frontend/pages/login_page.dart';
 import 'package:reflexionary_frontend/pages/kubera_pages/kuberes_page.dart';
 import 'package:reflexionary_frontend/pages/tethys_pages/tethys_screen.dart';

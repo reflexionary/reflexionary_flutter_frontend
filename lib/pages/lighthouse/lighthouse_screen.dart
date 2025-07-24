@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/insights/insights_screen.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/journals/journals_screen.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/patterns/patterns_screen.dart';
 
 class AnimatedHome extends StatefulWidget {
   const AnimatedHome({super.key});
@@ -57,7 +60,9 @@ class _AnimatedHomeState extends State<AnimatedHome> {
             top: 50,
             left: 50,
             child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const JournalsScreen()));
+                },
                 style: hoverUnderlineStyle,
                 child: const Text('Journals')),
           ),
@@ -67,7 +72,9 @@ class _AnimatedHomeState extends State<AnimatedHome> {
             top: 80,
             left: 70,
             child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const InsightsScreen()));
+                },
                 style: hoverUnderlineStyle,
                 child: const Text('Insights')),
           ),
@@ -77,7 +84,9 @@ class _AnimatedHomeState extends State<AnimatedHome> {
             top: 110,
             left: 90,
             child: TextButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PatternsScreen()));
+                },
                 style: hoverUnderlineStyle,
                 child: const Text('Patterns')),
           ),
