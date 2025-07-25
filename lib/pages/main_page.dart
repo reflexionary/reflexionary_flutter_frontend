@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+
+import 'appTheme/theme_provider.dart';
+import 'package:provider/provider.dart';
+
+// importing UI components
 import 'package:reflexionary_frontend/components/animated_gradient_box.dart';
 import 'package:reflexionary_frontend/components/glass_morphic_box.dart';
 import 'package:reflexionary_frontend/components/typewriter_question_banner.dart';
-import 'package:reflexionary_frontend/pages/tethys_pages/tethis_screen.dart';
-import 'appTheme/theme_provider.dart';
-import 'package:provider/provider.dart';
 
 // importing pages
 import 'package:reflexionary_frontend/models/shared_preferences/shared_preference_model.dart';

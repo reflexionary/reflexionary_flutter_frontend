@@ -11,7 +11,7 @@ class TypewriterText extends StatefulWidget {
     super.key,
     required this.text,
     this.style,
-    this.charDelay = const Duration(milliseconds: 30),
+    this.charDelay = const Duration(milliseconds: 12),
   });
 
   @override

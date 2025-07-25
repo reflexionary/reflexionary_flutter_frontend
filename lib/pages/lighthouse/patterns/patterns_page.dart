@@ -148,7 +148,7 @@ class _PatternsScreenState extends State<PatternsPage> {
                   ),
                 ),
               ...detectedPatterns.asMap().entries.map((entry) {
-                final index = entry.key;
+                // final index = entry.key;
                 final pattern = entry.value;
                 final icon = getTypeIcon(pattern.type);
                 final bgColor = getTypeColor(pattern.type);

@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:flutter_highlighter/flutter_highlighter.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:reflexionary_frontend/components/lottie_mirror_animation.dart';
 import 'package:reflexionary_frontend/components/typewriter_text.dart';
 import 'package:reflexionary_frontend/models/chat_models.dart';
@@ -16,13 +21,14 @@ class TethysScreen extends StatefulWidget {
 class _TethysScreenState extends State<TethysScreen> {
   final TextEditingController _promptController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
+  WebSocketChannel? _channel;
   bool _isThinking = false;
 
   late ChatSession _currentSession;
   final ChatHistoryService _historyService = ChatHistoryService();
   List<ChatSession> _chatSessions = [];
-
   final List<ChatMessage> _displayedMessages = [];
+  XFile? _selectedImage;
 
   @override
   void initState() {
@@ -34,6 +40,47 @@ class _TethysScreenState extends State<TethysScreen> {
       _loadMessagesWithAnimation();
     }
     _loadSessions();
+    _connectWebSocket();
+  }
+
+  void _connectWebSocket() {
+    _channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8000/ws/tethys'));
+    _channel!.stream.listen(
+      (data) {
+        if (!mounted) return;
+        final response = jsonDecode(data);
+        final message = ChatMessage(
+          text: response['content'],
+          isUser: false,
+          contentType: response['content_type'],
+          language: response['language'],
+        );
+        setState(() {
+          _currentSession.messages.add(message);
+          _displayedMessages.add(message);
+          _isThinking = false;
+        });
+        _saveAndRefresh();
+        _scrollToBottom();
+      },
+      onError: (error) {
+        setState(() {
+          _displayedMessages.add(ChatMessage(
+            text: 'Error: $error',
+            isUser: false,
+            contentType: 'text',
+          ));
+          _isThinking = false;
+        });
+      },
+      onDone: () => _reconnectWebSocket(),
+    );
+  }
+
+  void _reconnectWebSocket() {
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted) _connectWebSocket();
+    });
   }
 
   Future<void> _loadSessions() async {
@@ -46,47 +93,54 @@ class _TethysScreenState extends State<TethysScreen> {
     await _loadSessions();
   }
 
-  void _sendMessage() async {
+  Future<void> _sendMessage() async {
     final text = _promptController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty && _selectedImage == null) return;
 
     FocusScope.of(context).unfocus();
     _promptController.clear();
 
+    String? base64Image;
+    if (_selectedImage != null) {
+      final bytes = await _selectedImage!.readAsBytes();
+      base64Image = base64Encode(bytes);
+    }
+
+    final userMessage = ChatMessage(
+      text: text,
+      isUser: true,
+      contentType: 'text',
+      imageBase64: base64Image,
+    );
+
     if (_currentSession.id == 'new_chat') {
       _currentSession = ChatSession(
         id: const Uuid().v4(),
-        title: text.length > 30 ? '${text.substring(0, 30)}...' : text,
+        title: text.length > 30 ? '${text.substring(0, 30)}...' : text.isEmpty ? 'Image Chat' : text,
         createdAt: DateTime.now(),
-        messages: [ChatMessage(text: text, isUser: true)],
+        messages: [userMessage],
       );
       setState(() {
-        _displayedMessages.add(_currentSession.messages.first);
-        _chatSessions.insert(0, _currentSession); // Add new session to history
+        _displayedMessages.add(userMessage);
+        _chatSessions.insert(0, _currentSession);
       });
     } else {
       setState(() {
-        _currentSession.messages.add(ChatMessage(text: text, isUser: true));
-        _displayedMessages.add(_currentSession.messages.last);
+        _currentSession.messages.add(userMessage);
+        _displayedMessages.add(userMessage);
       });
     }
 
     setState(() => _isThinking = true);
     _scrollToBottom();
 
-    await Future.delayed(const Duration(seconds: 3));
+    // Send prompt to backend
+    _channel?.sink.add(jsonEncode({
+      'prompt': text,
+      'image': base64Image,
+    }));
 
-    if (mounted) {
-      const aiResponse = 'Here’s a Tethys insight for your journey 🌊';
-      setState(() {
-        final aiMessage = ChatMessage(text: aiResponse, isUser: false);
-        _currentSession.messages.add(aiMessage);
-        _displayedMessages.add(aiMessage);
-        _isThinking = false;
-      });
-      await _saveAndRefresh();
-      _scrollToBottom();
-    }
+    setState(() => _selectedImage = null);
   }
 
   void _scrollToBottom() {
@@ -107,6 +161,14 @@ class _TethysScreenState extends State<TethysScreen> {
       if (!mounted) return;
       setState(() => _displayedMessages.add(message));
       _scrollToBottom();
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    if (pickedFile != null && mounted) {
+      setState(() => _selectedImage = pickedFile);
     }
   }
 
@@ -197,7 +259,7 @@ class _TethysScreenState extends State<TethysScreen> {
                               await _historyService.deleteSession(session.id);
                               await _loadSessions();
                             } else if (value == 'export') {
-                              // Add your export logic here
+                              // Add export logic here
                             }
                           },
                           itemBuilder: (context) => [
@@ -268,6 +330,19 @@ class _TethysScreenState extends State<TethysScreen> {
             borderRadius: BorderRadius.circular(30.0),
             child: Row(
               children: [
+                IconButton(
+                  icon: const Icon(Icons.image),
+                  onPressed: _pickImage,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                if (_selectedImage != null)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                    child: Chip(
+                      label: Text(_selectedImage!.name),
+                      onDeleted: () => setState(() => _selectedImage = null),
+                    ),
+                  ),
                 Expanded(
                   child: TextField(
                     controller: _promptController,
@@ -303,6 +378,36 @@ class _TethysScreenState extends State<TethysScreen> {
 
     final bool animate = !isUser && isLastMessage && !_isThinking;
 
+    Widget contentWidget;
+    if (message.contentType == 'text') {
+      contentWidget = animate
+          ? TypewriterText(text: message.text, style: textStyle)
+          : Text(message.text, style: textStyle);
+    } else if (message.contentType == 'code') {
+      contentWidget = HighlightView(
+        message.text,
+        language: message.language ?? 'plaintext',
+        theme: Map<String, TextStyle>.from({
+          'root': textStyle,
+          'keyword': textStyle.copyWith(color: Colors.blue),
+          'string': textStyle.copyWith(color: Colors.green),
+          'comment': textStyle.copyWith(color: Colors.grey),
+        }),
+        padding: const EdgeInsets.all(8.0),
+      );
+    } else if (message.contentType == 'image') {
+      contentWidget = message.imageBase64 != null
+          ? Image.memory(
+              base64Decode(message.imageBase64!),
+              width: 200,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) => Text('Error loading image', style: textStyle),
+            )
+          : Text('No image data', style: textStyle);
+    } else {
+      contentWidget = Text('Unsupported content type', style: textStyle);
+    }
+
     return Align(
       alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -313,13 +418,19 @@ class _TethysScreenState extends State<TethysScreen> {
         decoration: BoxDecoration(
           color: isUser
               ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surfaceVariant,
+              : theme.colorScheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20.0),
         ),
-        child: animate
-            ? TypewriterText(text: message.text, style: textStyle)
-            : Text(message.text, style: textStyle),
+        child: contentWidget,
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _channel?.sink.close();
+    _promptController.dispose();
+    _scrollController.dispose();
+    super.dispose();
   }
 }

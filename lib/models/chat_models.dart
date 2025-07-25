@@ -1,28 +1,41 @@
 class ChatMessage {
   final String text;
   final bool isUser;
+  final String contentType;
+  final String? language;
+  final String? imageBase64;
 
-  ChatMessage({required this.text, required this.isUser});
+  ChatMessage({
+    required this.text,
+    required this.isUser,
+    this.contentType = 'text',
+    this.language,
+    this.imageBase64,
+  });
 
   Map<String, dynamic> toJson() => {
         'text': text,
         'isUser': isUser,
+        'contentType': contentType,
+        'language': language,
+        'imageBase64': imageBase64,
       };
 
-  factory ChatMessage.fromJson(Map<String, dynamic> json) {
-    return ChatMessage(
-      text: json['text'] as String,
-      isUser: json['isUser'] as bool,
-    );
-  }
+  factory ChatMessage.fromJson(Map<String, dynamic> json) => ChatMessage(
+        text: json['text'],
+        isUser: json['isUser'],
+        contentType: json['contentType'] ?? 'text',
+        language: json['language'],
+        imageBase64: json['imageBase64'],
+      );
 }
 
 class ChatSession {
   final String id;
-  String title;
+  final String title;
   final DateTime createdAt;
+  final List<ChatMessage> messages;
   bool isFavourite;
-  List<ChatMessage> messages;
 
   ChatSession({
     required this.id,
@@ -36,19 +49,17 @@ class ChatSession {
         'id': id,
         'title': title,
         'createdAt': createdAt.toIso8601String(),
-        'isFavourite': isFavourite,
         'messages': messages.map((m) => m.toJson()).toList(),
+        'isFavourite': isFavourite,
       };
 
-  factory ChatSession.fromJson(Map<String, dynamic> json) {
-    return ChatSession(
-      id: json['id'] as String,
-      title: json['title'] as String,
-      createdAt: DateTime.parse(json['createdAt'] as String),
-      isFavourite: json['isFavourite'] as bool? ?? false,
-      messages: (json['messages'] as List)
-          .map((m) => ChatMessage.fromJson(m as Map<String, dynamic>))
-          .toList(),
-    );
-  }
+  factory ChatSession.fromJson(Map<String, dynamic> json) => ChatSession(
+        id: json['id'],
+        title: json['title'],
+        createdAt: DateTime.parse(json['createdAt']),
+        messages: (json['messages'] as List)
+            .map((m) => ChatMessage.fromJson(m))
+            .toList(),
+        isFavourite: json['isFavourite'] ?? false,
+      );
 }
