@@ -81,7 +81,7 @@ class _TypewriterQuestionBannerState extends State<TypewriterQuestionBanner> {
         child: Text(
           visibleText,
           style: const TextStyle(
-            fontSize: 24,
+            fontSize: 16,
             fontWeight: FontWeight.bold,
             color: Colors.grey,
             fontFamily: 'Casanova',

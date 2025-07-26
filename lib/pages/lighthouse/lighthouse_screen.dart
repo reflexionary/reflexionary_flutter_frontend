@@ -47,28 +47,22 @@ class _AnimatedHomeState extends State<AnimatedHome> {
         elevation: 0,
       ),
       backgroundColor: isDark? Color.fromARGB(255, 0, 0, 0) : Colors.white,
-      // Allow the body to extend behind the AppBar
       extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // To prevent the image from stretching, we align it to the right
-          // and use BoxFit.fitHeight. This scales the image to match the
-          // screen's height while maintaining its aspect ratio. The width
-          // will adjust accordingly, preventing distortion.
           Align(
             alignment: Alignment.centerRight,
             child: Image.asset(
               img,
-              fit: BoxFit.fitHeight, // This is the key change
-              height: double.infinity, // Constrain height to the parent (Stack -> Scaffold)
-              // The width is not set, so it will be calculated based on the aspect ratio.
+              fit: BoxFit.fitHeight,
+              height: double.infinity, 
               opacity: isDark? const AlwaysStoppedAnimation(0.3) : const AlwaysStoppedAnimation(.50),
             ),
           ),
 
           // Journals text button
           Positioned(
-            top: 100, // Adjusted top padding to account for transparent AppBar
+            top: 100, 
             left: 50,
             child: TextButton(
                 onPressed: () {
