@@ -50,6 +50,10 @@ dependencies:
   web_socket_channel: ^3.0.3
   flutter_highlighter: ^0.1.1
   image_picker: ^1.1.2
+  flutter_dotenv: ^5.2.1
+  http: ^1.4.0
+  google_sign_in: ^7.1.1
+  flutter_secure_storage: ^9.2.4
 
 dev_dependencies:
   flutter_test:
@@ -80,6 +84,8 @@ flutter:
     - lib/assets/images/wallpaper_lighthouse_dark.jpg
     - lib/assets/animations/anim.lottie
     - lib/assets/animations/space_purple.json
+    - lib/assets/images/wallpaper_darkMode.png
+    - lib/assets/.env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

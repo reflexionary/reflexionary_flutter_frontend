@@ -11,7 +11,6 @@ class AnimatedHome extends StatefulWidget {
 }
 
 class _AnimatedHomeState extends State<AnimatedHome> {
-
   @override
   void initState() {
     super.initState();
@@ -36,32 +35,47 @@ class _AnimatedHomeState extends State<AnimatedHome> {
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
-    final String img = isDark? 'lib/assets/images/wallpaper_lighthouse_dark.jpg' : 'lib/assets/images/wallpaper_lighthouse.jpg';
+    final String img = isDark
+        ? 'lib/assets/images/wallpaper_darkMode.png'
+        : 'lib/assets/images/wallpaper_lighthouse.jpg';
 
     return Scaffold(
-      // backgroundColor: const Color(0xFFEEF2F7),
+      // Make the AppBar transparent to see the image behind it
       appBar: AppBar(
         title: const Text('LightHouse', style: TextStyle(fontFamily: 'Runalto')),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
+      backgroundColor: isDark? Color.fromARGB(255, 0, 0, 0) : Colors.white,
+      // Allow the body to extend behind the AppBar
+      extendBodyBehindAppBar: true,
       body: Stack(
         children: [
-          // add image wallpaper for lighthouse
-          Image.asset(
-            img,
-            fit: BoxFit.cover,
-            height: double.infinity,
-            width: double.infinity,
-            alignment: Alignment.center,
-            opacity: const AlwaysStoppedAnimation(.50),
+          // To prevent the image from stretching, we align it to the right
+          // and use BoxFit.fitHeight. This scales the image to match the
+          // screen's height while maintaining its aspect ratio. The width
+          // will adjust accordingly, preventing distortion.
+          Align(
+            alignment: Alignment.centerRight,
+            child: Image.asset(
+              img,
+              fit: BoxFit.fitHeight, // This is the key change
+              height: double.infinity, // Constrain height to the parent (Stack -> Scaffold)
+              // The width is not set, so it will be calculated based on the aspect ratio.
+              opacity: isDark? const AlwaysStoppedAnimation(0.3) : const AlwaysStoppedAnimation(.50),
+            ),
           ),
 
           // Journals text button
           Positioned(
-            top: 50,
+            top: 100, // Adjusted top padding to account for transparent AppBar
             left: 50,
             child: TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const JournalsScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const JournalsScreen()));
                 },
                 style: hoverUnderlineStyle,
                 child: const Text('Journals')),
@@ -69,11 +83,14 @@ class _AnimatedHomeState extends State<AnimatedHome> {
 
           // Insights text button
           Positioned(
-            top: 80,
+            top: 130, // Adjusted top padding
             left: 70,
             child: TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const InsightsScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const InsightsScreen()));
                 },
                 style: hoverUnderlineStyle,
                 child: const Text('Insights')),
@@ -81,11 +98,14 @@ class _AnimatedHomeState extends State<AnimatedHome> {
 
           // Patterns text button
           Positioned(
-            top: 110,
+            top: 160, // Adjusted top padding
             left: 90,
             child: TextButton(
                 onPressed: () {
-                  Navigator.push(context, MaterialPageRoute(builder: (context) => const PatternsScreen()));
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const PatternsScreen()));
                 },
                 style: hoverUnderlineStyle,
                 child: const Text('Patterns')),

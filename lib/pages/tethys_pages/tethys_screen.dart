@@ -1,14 +1,15 @@
 import 'dart:convert';
-import 'dart:typed_data';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
-import 'package:flutter_highlighter/flutter_highlighter.dart';
+import 'package:http/http.dart' as http;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:reflexionary_frontend/components/lottie_mirror_animation.dart';
-import 'package:reflexionary_frontend/components/typewriter_text.dart';
+import 'package:uuid/uuid.dart';
 import 'package:reflexionary_frontend/models/chat_models.dart';
 import 'package:reflexionary_frontend/services/chat_history_service.dart';
-import 'package:uuid/uuid.dart';
+import 'package:reflexionary_frontend/pages/tethys_pages/widgets/chat_view.dart';
+import 'package:reflexionary_frontend/pages/tethys_pages/widgets/history_panel.dart';
+import 'package:reflexionary_frontend/pages/tethys_pages/widgets/prompt_input.dart';
 
 class TethysScreen extends StatefulWidget {
   final ChatSession? session;
@@ -21,7 +22,6 @@ class TethysScreen extends StatefulWidget {
 class _TethysScreenState extends State<TethysScreen> {
   final TextEditingController _promptController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
-  WebSocketChannel? _channel;
   bool _isThinking = false;
 
   late ChatSession _currentSession;
@@ -39,48 +39,21 @@ class _TethysScreenState extends State<TethysScreen> {
     if (widget.session != null) {
       _loadMessagesWithAnimation();
     }
-    _loadSessions();
-    _connectWebSocket();
+    _initialize();
   }
 
-  void _connectWebSocket() {
-    _channel = WebSocketChannel.connect(Uri.parse('ws://localhost:8000/ws/tethys'));
-    _channel!.stream.listen(
-      (data) {
-        if (!mounted) return;
-        final response = jsonDecode(data);
-        final message = ChatMessage(
-          text: response['content'],
-          isUser: false,
-          contentType: response['content_type'],
-          language: response['language'],
-        );
-        setState(() {
-          _currentSession.messages.add(message);
-          _displayedMessages.add(message);
-          _isThinking = false;
-        });
-        _saveAndRefresh();
-        _scrollToBottom();
-      },
-      onError: (error) {
-        setState(() {
-          _displayedMessages.add(ChatMessage(
-            text: 'Error: $error',
-            isUser: false,
-            contentType: 'text',
-          ));
-          _isThinking = false;
-        });
-      },
-      onDone: () => _reconnectWebSocket(),
-    );
-  }
-
-  void _reconnectWebSocket() {
-    Future.delayed(const Duration(seconds: 2), () {
-      if (mounted) _connectWebSocket();
-    });
+  Future<void> _initialize() async {
+    try {
+      await dotenv.load(fileName: 'lib/assets/.env');
+      if (kDebugMode) {
+        print('dotenv loaded: ${dotenv.env}');
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading .env: $e');
+      }
+    }
+    await _loadSessions();
   }
 
   Future<void> _loadSessions() async {
@@ -134,12 +107,77 @@ class _TethysScreenState extends State<TethysScreen> {
     setState(() => _isThinking = true);
     _scrollToBottom();
 
-    // Send prompt to backend
-    _channel?.sink.add(jsonEncode({
-      'prompt': text,
-      'image': base64Image,
-    }));
+    try {
+      final apiKey = dotenv.env['GEMINI_API_KEY'];
+      if (kDebugMode) {
+        print('API Key: $apiKey');
+      }
+      if (apiKey == null || apiKey.isEmpty) {
+        throw Exception('GEMINI_API_KEY not set in .env file');
+      }
 
+      final uri = Uri.parse('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=$apiKey');
+      final headers = {'Content-Type': 'application/json'};
+      final body = jsonEncode({
+        'contents': [
+          {
+            'parts': [
+              if (text.isNotEmpty) {'text': text},
+              if (base64Image != null) {
+                'inlineData': {
+                  'mimeType': 'image/jpeg',
+                  'data': base64Image,
+                },
+              },
+            ],
+          },
+        ],
+        'generationConfig': {
+          'responseMimeType': 'application/json',
+          'responseSchema': {
+            'type': 'object',
+            'properties': {
+              'content_type': {'type': 'string', 'enum': ['text', 'code', 'image']},
+              'content': {'type': 'string'},
+              'language': {'type': 'string', 'nullable': true},
+            },
+            'required': ['content_type', 'content'],
+          },
+        },
+      });
+
+      final response = await http.post(uri, headers: headers, body: body);
+
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        final content = jsonDecode(responseData['candidates'][0]['content']['parts'][0]['text']);
+        final aiMessage = ChatMessage(
+          text: content['content'],
+          isUser: false,
+          contentType: content['content_type'],
+          language: content['language'],
+        );
+        setState(() {
+          _currentSession.messages.add(aiMessage);
+          _displayedMessages.add(aiMessage);
+          _isThinking = false;
+        });
+      } else {
+        throw Exception('API error: ${response.statusCode} - ${response.body}');
+      }
+    } catch (e) {
+      setState(() {
+        _displayedMessages.add(ChatMessage(
+          text: 'Error: $e',
+          isUser: false,
+          contentType: 'text',
+        ));
+        _isThinking = false;
+      });
+    }
+
+    await _saveAndRefresh();
+    _scrollToBottom();
     setState(() => _selectedImage = null);
   }
 
@@ -200,9 +238,36 @@ class _TethysScreenState extends State<TethysScreen> {
       ),
       body: Row(
         children: [
-          SizedBox(width: 320, child: _buildHistoryPanel()),
+          SizedBox(
+            width: 320,
+            child: HistoryPanel(
+              chatSessions: _chatSessions,
+              historyService: _historyService,
+              onSessionsUpdated: _loadSessions,
+            ),
+          ),
           const VerticalDivider(thickness: 1, width: 1),
-          Expanded(child: _buildChatView()),
+          Expanded(
+            child: Column(
+              children: [
+                Expanded(
+                  child: ChatView(
+                    displayedMessages: _displayedMessages,
+                    isThinking: _isThinking,
+                    scrollController: _scrollController,
+                  ),
+                ),
+                PromptInput(
+                  promptController: _promptController,
+                  isThinking: _isThinking,
+                  onSend: _sendMessage,
+                  onPickImage: _pickImage,
+                  selectedImage: _selectedImage,
+                  onClearImage: () => setState(() => _selectedImage = null),
+                ),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -224,211 +289,37 @@ class _TethysScreenState extends State<TethysScreen> {
           ),
         ],
       ),
-      drawer: Drawer(child: _buildHistoryPanel()),
-      body: _buildChatView(),
-    );
-  }
-
-  Widget _buildHistoryPanel() {
-    return Column(
-      children: [
-        const DrawerHeader(
-          child: Text('Chat History', style: TextStyle(fontFamily: 'Runalto', fontSize: 24)),
-        ),
-        Expanded(
-          child: _chatSessions.isEmpty
-              ? const Center(child: Text('Feels empty here...', style: TextStyle(fontStyle: FontStyle.italic)))
-              : ListView.builder(
-                  itemCount: _chatSessions.length,
-                  itemBuilder: (context, index) {
-                    final session = _chatSessions[index];
-                    return PopupMenuTheme(
-                      data: PopupMenuTheme.of(context).copyWith(position: PopupMenuPosition.under),
-                      child: ListTile(
-                        leading: session.isFavourite
-                            ? const Icon(Icons.star, color: Colors.amber)
-                            : const Icon(Icons.chat_bubble_outline),
-                        title: Text(session.title, overflow: TextOverflow.ellipsis),
-                        trailing: PopupMenuButton<String>(
-                          onSelected: (value) async {
-                            if (value == 'favourite') {
-                              session.isFavourite = !session.isFavourite;
-                              await _historyService.saveChatSession(session);
-                              await _loadSessions();
-                            } else if (value == 'delete') {
-                              await _historyService.deleteSession(session.id);
-                              await _loadSessions();
-                            } else if (value == 'export') {
-                              // Add export logic here
-                            }
-                          },
-                          itemBuilder: (context) => [
-                            PopupMenuItem(
-                              value: 'favourite',
-                              child: Text(session.isFavourite
-                                  ? 'Unmark as favourite'
-                                  : 'Mark as favourite'),
-                            ),
-                            const PopupMenuItem(value: 'export', child: Text('Export Chat')),
-                            const PopupMenuItem(value: 'delete', child: Text('Delete')),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => TethysScreen(session: session),
-                            ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildChatView() {
-    return Column(
-      children: [
-        Expanded(
-          child: _displayedMessages.isEmpty && !_isThinking
-              ? const Center(child: Text('Ask me anything about your reflections!'))
-              : ListView.builder(
-                  controller: _scrollController,
-                  padding: const EdgeInsets.all(8.0),
-                  itemCount: _displayedMessages.length,
-                  itemBuilder: (context, index) {
-                    final message = _displayedMessages[index];
-                    final isLastMessage = index == _displayedMessages.length - 1;
-                    return _buildMessageBubble(message, isLastMessage: isLastMessage);
-                  },
-                ),
-        ),
-        AnimatedSwitcher(
-          duration: const Duration(milliseconds: 300),
-          transitionBuilder: (child, animation) => FadeTransition(
-            opacity: animation,
-            child: ScaleTransition(scale: animation, child: child),
-          ),
-          child: _isThinking ? const LottieMirrorAnimation() : const SizedBox.shrink(),
-        ),
-        _buildPromptInput(),
-      ],
-    );
-  }
-
-  Widget _buildPromptInput() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 16, 16, 32),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 800),
-          child: Material(
-            elevation: 8.0,
-            borderRadius: BorderRadius.circular(30.0),
-            child: Row(
-              children: [
-                IconButton(
-                  icon: const Icon(Icons.image),
-                  onPressed: _pickImage,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                if (_selectedImage != null)
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                    child: Chip(
-                      label: Text(_selectedImage!.name),
-                      onDeleted: () => setState(() => _selectedImage = null),
-                    ),
-                  ),
-                Expanded(
-                  child: TextField(
-                    controller: _promptController,
-                    decoration: const InputDecoration(
-                      hintText: 'Enter a prompt...',
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.symmetric(horizontal: 20.0),
-                    ),
-                    onSubmitted: (_) => _sendMessage(),
-                  ),
-                ),
-                IconButton(
-                  icon: Icon(_isThinking ? Icons.hourglass_empty : Icons.send),
-                  onPressed: _isThinking ? null : _sendMessage,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-              ],
-            ),
-          ),
+      drawer: Drawer(
+        child: HistoryPanel(
+          chatSessions: _chatSessions,
+          historyService: _historyService,
+          onSessionsUpdated: _loadSessions,
         ),
       ),
-    );
-  }
-
-  Widget _buildMessageBubble(ChatMessage message, {bool isLastMessage = false}) {
-    final isUser = message.isUser;
-    final theme = Theme.of(context);
-    final textStyle = TextStyle(
-      color: isUser
-          ? theme.colorScheme.onPrimaryContainer
-          : theme.colorScheme.onSurfaceVariant,
-    );
-
-    final bool animate = !isUser && isLastMessage && !_isThinking;
-
-    Widget contentWidget;
-    if (message.contentType == 'text') {
-      contentWidget = animate
-          ? TypewriterText(text: message.text, style: textStyle)
-          : Text(message.text, style: textStyle);
-    } else if (message.contentType == 'code') {
-      contentWidget = HighlightView(
-        message.text,
-        language: message.language ?? 'plaintext',
-        theme: Map<String, TextStyle>.from({
-          'root': textStyle,
-          'keyword': textStyle.copyWith(color: Colors.blue),
-          'string': textStyle.copyWith(color: Colors.green),
-          'comment': textStyle.copyWith(color: Colors.grey),
-        }),
-        padding: const EdgeInsets.all(8.0),
-      );
-    } else if (message.contentType == 'image') {
-      contentWidget = message.imageBase64 != null
-          ? Image.memory(
-              base64Decode(message.imageBase64!),
-              width: 200,
-              fit: BoxFit.contain,
-              errorBuilder: (context, error, stackTrace) => Text('Error loading image', style: textStyle),
-            )
-          : Text('No image data', style: textStyle);
-    } else {
-      contentWidget = Text('Unsupported content type', style: textStyle);
-    }
-
-    return Align(
-      alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-      child: Container(
-        constraints:
-            BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-        padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 16.0),
-        margin: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-        decoration: BoxDecoration(
-          color: isUser
-              ? theme.colorScheme.primaryContainer
-              : theme.colorScheme.surfaceContainerHighest,
-          borderRadius: BorderRadius.circular(20.0),
-        ),
-        child: contentWidget,
+      body: Column(
+        children: [
+          Expanded(
+            child: ChatView(
+              displayedMessages: _displayedMessages,
+              isThinking: _isThinking,
+              scrollController: _scrollController,
+            ),
+          ),
+          PromptInput(
+            promptController: _promptController,
+            isThinking: _isThinking,
+            onSend: _sendMessage,
+            onPickImage: _pickImage,
+            selectedImage: _selectedImage,
+            onClearImage: () => setState(() => _selectedImage = null),
+          ),
+        ],
       ),
     );
   }
 
   @override
   void dispose() {
-    _channel?.sink.close();
     _promptController.dispose();
     _scrollController.dispose();
     super.dispose();
