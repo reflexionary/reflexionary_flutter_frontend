@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:reflexionary_frontend/pages/lighthouse/insights/insights_screen.dart';
 import 'package:reflexionary_frontend/pages/lighthouse/journals/journals_screen.dart';
+import 'package:reflexionary_frontend/pages/lighthouse/lighthouseScreen.dart';
 import 'package:reflexionary_frontend/pages/lighthouse/patterns/patterns_screen.dart';
 
 class AnimatedHome extends StatefulWidget {
@@ -103,6 +104,21 @@ class _AnimatedHomeState extends State<AnimatedHome> {
                 },
                 style: hoverUnderlineStyle,
                 child: const Text('Patterns')),
+          ),
+
+          // Patterns text button
+          Positioned(
+            top: 190, // Adjusted top padding
+            left: 110,
+            child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LighthouseHomePage()));
+                },
+                style: hoverUnderlineStyle,
+                child: const Text('Demo Data')),
           ),
         ],
       ),

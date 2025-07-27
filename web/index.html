@@ -31,6 +31,25 @@
 
   <title>reflexionary_frontend</title>
   <link rel="manifest" href="manifest.json">
+    <script type="module">
+    // Import the functions you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-app.js";
+    import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.0.0/firebase-analytics.js";
+    
+    const firebaseConfig = {
+      apiKey: "AIzaSyCqVFu4fQEs1HWtaHMk4mMTzfOnc4FtHM0",
+      authDomain: "flutter-app-d51d2.firebaseapp.com",
+      projectId: "flutter-app-d51d2",
+      storageBucket: "flutter-app-d51d2.firebasestorage.app",
+      messagingSenderId: "319445440827",
+      appId: "1:319445440827:web:0ff6a9e4ed0b583c76ff1e",
+      measurementId: "G-3XJ2L0VJ5Y"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const analytics = getAnalytics(app);
+  </script>
 </head>
 <body>
   <script src="flutter_bootstrap.js" async></script>

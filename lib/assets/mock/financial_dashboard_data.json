@@ -1,0 +1,155 @@
+{
+    "income_vs_expenditure": {
+        "title": "Monthly Income vs Expenditure",
+        "x": [
+            "2025-01",
+            "2025-02",
+            "2025-03",
+            "2025-04",
+            "2025-05",
+            "2025-06",
+            "2025-07"
+        ],
+        "income": [
+            81928.68000000001,
+            288224.27,
+            613847.3,
+            753779.85,
+            805273.33,
+            136764.44,
+            328796.26
+        ],
+        "expenditure": [
+            240466.15,
+            998159.28,
+            961399.61,
+            968492.08,
+            1115798.22,
+            1176047.44,
+            693976.22
+        ]
+    },
+    "monthly_quarterly": {
+        "monthly_spending": {
+            "x": [
+                "2025-01",
+                "2025-02",
+                "2025-03",
+                "2025-04",
+                "2025-05",
+                "2025-06",
+                "2025-07"
+            ],
+            "y": [
+                240466.15,
+                998159.28,
+                961399.61,
+                968492.08,
+                1115798.22,
+                1176047.44,
+                693976.22
+            ]
+        },
+        "quarterly_spending": {
+            "x": [
+                "2025-Q1",
+                "2025-Q2",
+                "2025-Q3"
+            ],
+            "y": [
+                2200025.04,
+                3260337.7399999998,
+                693976.22
+            ]
+        }
+    },
+    "category_spending": {
+        "title": "Spending by Category",
+        "categories": [
+            "Utilities",
+            "Food",
+            "Entertainment",
+            "Health",
+            "Education",
+            "Transport",
+            "Shopping",
+            "Rent",
+            "Subscription",
+            "EMI"
+        ],
+        "amounts": [
+            990268.67,
+            893002.99,
+            705727.46,
+            703656.17,
+            640934.91,
+            559727.36,
+            554345.61,
+            473790.82,
+            420500.20999999996,
+            212384.8
+        ]
+    },
+    "suspicious_transactions": {
+        "title": "Suspicious Transactions",
+        "transactions": [
+            {
+                "date": "2025-06-05",
+                "amount": 98478.65,
+                "category": "Utilities",
+                "description": "Hic praesentium distinctio rem molestiae."
+            },
+            {
+                "date": "2025-05-20",
+                "amount": 99395.22,
+                "category": "Entertainment",
+                "description": "Est unde."
+            },
+            {
+                "date": "2025-02-04",
+                "amount": 90299.78,
+                "category": "Food",
+                "description": "Provident perspiciatis officia."
+            },
+            {
+                "date": "2025-05-30",
+                "amount": 96058.81,
+                "category": "Education",
+                "description": "Modi tempore nesciunt ratione sequi."
+            },
+            {
+                "date": "2025-05-02",
+                "amount": 91485.13,
+                "category": "Rent",
+                "description": "Nostrum at aspernatur eos aliquam."
+            },
+            {
+                "date": "2025-06-29",
+                "amount": 99013.71,
+                "category": "Utilities",
+                "description": "Dolores vel dolores."
+            },
+            {
+                "date": "2025-07-20",
+                "amount": 98293.43,
+                "category": "Utilities",
+                "description": "Impedit laudantium magni."
+            }
+        ]
+    },
+    "account_balances": {
+        "title": "Account Balances",
+        "accounts": [
+            {
+                "bank": "Choudhary, Batta and Randhawa",
+                "type": "savings",
+                "balance": 317562
+            },
+            {
+                "bank": "Char, Wason and Wable",
+                "type": "checking",
+                "balance": 23419
+            }
+        ]
+    }
+}
