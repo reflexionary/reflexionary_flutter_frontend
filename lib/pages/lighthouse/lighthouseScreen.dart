@@ -415,7 +415,7 @@ class _LighthouseHomePageState extends State<LighthouseHomePage> {
                           Text('Behavioral Mirror: ${_compassResults!['behavioral_mirror_insight']}'),
                           const SizedBox(height: 8),
                           Text('Pre-Commitment Anchors:', style: const TextStyle(fontWeight: FontWeight.bold)),
-                          ...(_compassResults!['pre_commitment_anchors'] as List).map((anchor) => Text('- $anchor')).toList(),
+                          ...(_compassResults!['pre_commitment_anchors'] as List).map((anchor) => Text('- $anchor')),
                           const SizedBox(height: 8),
                           Text('Rational Recommendations:', style: const TextStyle(fontWeight: FontWeight.bold)),
                           ...(_compassResults!['rational_recommendations'] as List).isEmpty
@@ -441,26 +441,26 @@ class _LighthouseHomePageState extends State<LighthouseHomePage> {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _isLoadingWhatIf ? null : () => _runWhatIfScenario('fear_sell'),
-                        child: const Text('Simulate Fear-Sell'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.red[600],
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
+                        child: const Text('Simulate Fear-Sell'),
                       ),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: ElevatedButton(
                         onPressed: _isLoadingWhatIf ? null : () => _runWhatIfScenario('rational_hold'),
-                        child: const Text('Simulate Rational-Hold'),
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.green[600],
                           foregroundColor: Colors.white,
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
                         ),
+                        child: const Text('Simulate Rational-Hold'),
                       ),
                     ),
                   ],

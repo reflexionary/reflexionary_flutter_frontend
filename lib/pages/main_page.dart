@@ -112,12 +112,12 @@ class _MainPageState extends State<MainPage> {
       return ElevatedButton(
         onPressed: authProvider.isLoading ? null : showLoginDialog,
         style: ElevatedButton.styleFrom(
-          backgroundColor: isDark ? Colors.white12 : Colors.blueGrey.shade100,
+          backgroundColor: Colors.blueGrey//isDark ? Colors.white12 : Colors.blueGrey.shade100,
         ),
         child: authProvider.isLoading
             ? const SizedBox(
                 width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2))
-            : const Text("Login"),
+            : const Text("Login", style: TextStyle(fontSize: 20),),
       );
     } else {
       final displayName = "User"; // Dummy, since there's no email/name
